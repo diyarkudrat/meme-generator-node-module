@@ -74,11 +74,41 @@ CustomMemeGenerator.prototype.generateMeme = function (imgOptions) {
 }
 
 CustomMemeGenerator.prototype.calcCanvasSize = function () {
+    const {canvas, canvasImage} = this;
+    canvas.height = canvasImage.height / canvasImage.width * canvas.width;
 
+    this.memeWidth = canvas.width;
+	this.memeHeight = canvas.height;
 }
 
 CustomMemeGenerator.prototype.createMeme = function () {
-    
+    const {
+        canvas,
+        canvasImage,
+        memeHeight,
+        memeWidth,
+        textBottom,
+        textTop,
+        fontSize,
+        fontFamily,
+        context,
+        wrapText
+    } = this;
+
+    context.clearRect(0, 0, canvas.width, canvas.height);
+
+    let x = memeWidth / 2;
+    let y;
+    if (textTop) {
+        y = 0;
+        this.context.textBaseline = 'top';
+        genText()
+    }
+    if (textBottom) {
+        y = memeHeight;
+        this.context.textBaseline = 'bottom';
+        genText();
+    }
 }
 
 module.exports = {

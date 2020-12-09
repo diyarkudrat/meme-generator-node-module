@@ -102,13 +102,17 @@ CustomMemeGenerator.prototype.createMeme = function () {
     if (textTop) {
         y = 0;
         this.context.textBaseline = 'top';
-        genText()
+        genText(x, y, context, textTop, memeWidth, false, lineHeight, fontSize, fontFamily);
     }
     if (textBottom) {
         y = memeHeight;
         this.context.textBaseline = 'bottom';
-        genText();
+        genText(x, y, context, textBottom, memeWidth, true, lineHeight, fontSize, fontFamily);
     }
+}
+
+CustomMemeGenerator.prototype.genText = function (x, y, context, text, maxWidth, fromBottom, lineHeightRatio, fontSize, fontFamily) {
+    
 }
 
 module.exports = {

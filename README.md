@@ -1,6 +1,6 @@
 # meme-displayer
 
-[![NPM version](https://img.shields.io/npm/v/tocsify.svg?style=flat)](https://www.npmjs.com/package/meme-displayer) [![NPM downloads](https://img.shields.io/npm/dm/meme-displayer.svg?style=flat)](https://npmjs.org/package/meme-displayer)
+[![NPM version](https://img.shields.io/npm/v/meme-displayer.svg?style=flat)](https://www.npmjs.com/package/meme-displayer) [![NPM downloads](https://img.shields.io/npm/dm/meme-displayer.svg?style=flat)](https://npmjs.org/package/meme-displayer)
 
 Node module that allows you to generate a meme by specifying the text and image address
 

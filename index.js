@@ -48,11 +48,37 @@ CustomMemeGenerator.prototype.setFontOptions = function (options) {
 }
 
 CustomMemeGenerator.prototype.setImageOptions = function (options) {
-    
+    const {textTop, textBottom, url} = options;
+
+    this.url = url;
+    this.textTop = textTop;
+    this.textBottom = textBottom;
 }
 
 CustomMemeGenerator.prototype.generateMeme = function (imgOptions) {
+    this.setImageOptions(imgOptions);
 
+    return new Promise((resolve, reject) => {
+        request.get(this.url, (res, body, err) => {
+            if (!error && res.statusCode === 200) {
+                this.canvasImage.src = new Buffer(body);
+                this.calcCanvasSize();
+                this.createMeme();
+
+                resolve(this.canvas.toBuffer());
+            } else {
+                reject(new Error('The image you provided could not be loaded:('));
+            }
+        });
+    });
+}
+
+CustomMemeGenerator.prototype.calcCanvasSize = function () {
+
+}
+
+CustomMemeGenerator.prototype.createMeme = function () {
+    
 }
 
 module.exports = {

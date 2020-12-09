@@ -2,8 +2,6 @@ const request = require('request').defaults({encoding: null});
 const Canvas = require('canvas');
 
 
-
-
 function CustomMemeGenerator (userConfig = {}) {
 	const {canvasOptions, fontOptions} = userConfig;
 	const config = Object.assign({
@@ -18,13 +16,13 @@ function CustomMemeGenerator (userConfig = {}) {
 		}
 	}, canvasOptions ? {canvasOptions: canvasOptions} : null, fontOptions ? {fontOptions: fontOptions} : null);
 
-	this.setCanvas(config.canvasOptions);
+	this.createCanvas(config.canvasOptions);
 	this.setFontOptions(config.fontOptions);
 }
 
 CustomMemeGenerator.prototype.createCanvas = function (options) {
     const {canvasWidth, canvasHeight} = options;
-    const canvas = new Canvas(canvasWidth, canvasHeight);
+    const canvas = Canvas.createCanvas(canvasWidth, canvasHeight);
     const Image = Canvas.Image;
 
     this.canvas = canvas;
@@ -60,7 +58,7 @@ CustomMemeGenerator.prototype.generateMeme = function (imgOptions) {
 
     return new Promise((resolve, reject) => {
         request.get(this.url, (res, body, err) => {
-            if (!error && res.statusCode === 200) {
+            if (!err && res.statusCode === 200) {
                 this.canvasImage.src = new Buffer(body);
                 this.calcCanvasSize();
                 this.createMeme();
@@ -68,6 +66,7 @@ CustomMemeGenerator.prototype.generateMeme = function (imgOptions) {
                 resolve(this.canvas.toBuffer());
             } else {
                 reject(new Error('The image you provided could not be loaded:('));
+                console.log(err);
             }
         });
     });
@@ -112,9 +111,45 @@ CustomMemeGenerator.prototype.createMeme = function () {
 }
 
 CustomMemeGenerator.prototype.genText = function (x, y, context, text, maxWidth, fromBottom, lineHeightRatio, fontSize, fontFamily) {
-    
+    if (!text) {
+        return;
+    }
+
+    context.font = `bold ${fontSize}pt ${fontFamily}`;
+    const pushMethod = fromBottom ? 'unshift' :'push';
+    const lineHeight = lineHeightRatio * fontSize;
+
+    let lines = [];
+    let line = '';
+    let words = text.split(' ');
+
+    for (let n = 0; n < words.length; n++) {
+        const testLine = line + ' ' + words[n];
+        const metrics = context.measureText(testLine);
+        const testWidth = metrics.width;
+
+        if (testWidth > maxWidth) {
+            lines[pushMethod];
+            line = words[n] + ' ';
+        } else {
+            line = testLine;
+        }
+    }
+    lines[pushMethod](line);
+
+    if (lines.length > 2) {
+		CustomMemeGenerator.prototype.genText(x, y, context, text, maxWidth, fromBottom, lineHeightRatio, fontSize - 10, fontFamily);
+	} else {
+		for (let i in lines) {
+			if (fromBottom) {
+				context.strokeText(lines[i], x, y - lineHeight * i);
+				context.fillText(lines[i], x, y - lineHeight * i);
+			} else {
+				context.strokeText(lines[i], x, y + lineHeight * i);
+				context.fillText(lines[i], x, y + lineHeight * i);
+			}
+		}
+	}
 }
 
-module.exports = {
-    CustomMemeGenerator
-}
+module.exports = CustomMemeGenerator;

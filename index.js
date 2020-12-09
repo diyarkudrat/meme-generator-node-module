@@ -46,30 +46,30 @@ CustomMemeGenerator.prototype.setFontOptions = function (options) {
 }
 
 CustomMemeGenerator.prototype.setImageOptions = function (options) {
-    const {textTop, textBottom, url} = options;
+    const {topText, bottomText, url} = options;
 
     this.url = url;
-    this.textTop = textTop;
-    this.textBottom = textBottom;
+    this.topText = topText;
+    this.bottomText = bottomText;
 }
 
-CustomMemeGenerator.prototype.generateMeme = function (imgOptions) {
-    this.setImageOptions(imgOptions);
+CustomMemeGenerator.prototype.generateMeme = function (imageOptions) {
+    this.setImageOptions(imageOptions);
 
-    return new Promise((resolve, reject) => {
-        request.get(this.url, (res, body, err) => {
-            if (!err && res.statusCode === 200) {
-                this.canvasImage.src = new Buffer(body);
-                this.calcCanvasSize();
-                this.createMeme();
+	return new Promise((resolve, reject) => {
+		request.get(this.url, (error, response, body) => {
+			if (!error && response.statusCode === 200) {
+				this.canvasImage.src = new Buffer(body);
 
-                resolve(this.canvas.toBuffer());
-            } else {
-                reject(new Error('The image you provided could not be loaded:('));
-                console.log(err);
-            }
-        });
-    });
+				this.calcCanvasSize();
+				this.createMeme();
+
+				resolve(this.canvas.toBuffer());
+			} else {
+				reject(new Error('The image could not be loaded.'));
+			}
+		});
+	});
 }
 
 CustomMemeGenerator.prototype.calcCanvasSize = function () {
@@ -86,27 +86,29 @@ CustomMemeGenerator.prototype.createMeme = function () {
         canvasImage,
         memeHeight,
         memeWidth,
-        textBottom,
-        textTop,
+        bottomText,
+        topText,
         fontSize,
         fontFamily,
+        lineHeight,
         context,
-        wrapText
+        genText
     } = this;
 
     context.clearRect(0, 0, canvas.width, canvas.height);
+    context.drawImage(canvasImage, 0, 0, memeWidth, memeHeight);
 
     let x = memeWidth / 2;
     let y;
-    if (textTop) {
+    if (topText) {
         y = 0;
         this.context.textBaseline = 'top';
-        genText(x, y, context, textTop, memeWidth, false, lineHeight, fontSize, fontFamily);
+        genText(x, y, context, topText, memeWidth, false, lineHeight, fontSize, fontFamily);
     }
-    if (textBottom) {
+    if (bottomText) {
         y = memeHeight;
         this.context.textBaseline = 'bottom';
-        genText(x, y, context, textBottom, memeWidth, true, lineHeight, fontSize, fontFamily);
+        genText(x, y, context, bottomText, memeWidth, true, lineHeight, fontSize, fontFamily);
     }
 }
 
